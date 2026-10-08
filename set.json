@@ -1,0 +1,317 @@
+{
+  "config_meta": {
+    "version": 4,
+    "name": "Information Gatherer Agent",
+    "comment": "通用信息研究Agent配置；个人信息只放profile.txt，程序源码不保存用户隐私。",
+    "#config_meta#-->": "开源版说明：不要把真实API Key、个人信息或私人研究结果提交到公开仓库。"
+  },
+  "llm": {
+    "default_provider": "local",
+    "#default_provider#-->": "默认Provider可选：local / online；真正参与任务的模型由providers和multi_model共同决定。",
+    "normal_workers": 1,
+    "#normal_workers#-->": "本地模型常规并发数；请求积压不超过queue_threshold时使用。",
+    "max_workers": 2,
+    "#max_workers#-->": "本地模型最大并发数；积压超过阈值后逐级增加，建议根据显存和模型能力调整。",
+    "queue_threshold": 10,
+    "#queue_threshold#-->": "待处理LLM请求数阈值；超过后才允许提高本地并发。",
+    "dynamic_workers": true,
+    "#dynamic_workers#-->": "是否启用本地模型动态并发。",
+    "force_single_thread_local": false,
+    "#force_single_thread_local#-->": "true=本地所有模型强制单线程；false=允许使用normal_workers/max_workers动态并发。",
+    "max_retries": 1,
+    "#max_retries#-->": "单次模型请求失败后的额外重试次数。",
+    "retry_delay": 5,
+    "#retry_delay#-->": "重试前等待秒数。",
+    "max_input_chars": 36000,
+    "#max_input_chars#-->": "单次发送给模型的最大输入字符数；过大可能导致本地模型超时。"
+  },
+  "providers": {
+    "local": {
+      "enabled": true,
+      "#enabled#-->": "是否启用本地Provider。",
+      "type": "openai_compatible",
+      "#type#-->": "当前使用OpenAI兼容接口。",
+      "base_url": "http://127.0.0.1:1234/v1",
+      "#base_url#-->": "LM Studio的OpenAI兼容API地址。",
+      "api_key": "lm-studio",
+      "#api_key#-->": "LM Studio通常只需非空字符串；不要在开源配置中放真实在线Key。",
+      "normal_workers": 1,
+      "#normal_workers#-->": "本地Provider常规并发；通常与llm.normal_workers一致。",
+      "max_workers": 2,
+      "#max_workers#-->": "本地Provider最大并发；通常与llm.max_workers一致。",
+      "models": [
+        {
+          "name": "YOUR_LOCAL_MODEL",
+          "#name#-->": "填写LM Studio当前实际加载的模型名称。可继续添加第二、第三个模型对象。",
+          "enabled": true,
+          "#enabled#-->": "是否让这个具体模型参加任务。",
+          "connect_timeout": 20,
+          "#connect_timeout#-->": "该模型连接超时秒数。",
+          "read_timeout": 900,
+          "#read_timeout#-->": "该模型读取/生成超时秒数。",
+          "max_tokens": 6000,
+          "#max_tokens#-->": "该模型单次最大输出Token。",
+          "temperature": 0.2,
+          "#temperature#-->": "该模型随机性。事实整理建议0.1~0.3。"
+        }
+      ]
+    },
+    "online": {
+      "enabled": false,
+      "#enabled#-->": "是否启用在线Provider；开源时建议保持false并删除真实Key。",
+      "type": "openai_compatible",
+      "#type#-->": "大多数OpenAI兼容在线API可使用。",
+      "base_url": "",
+      "#base_url#-->": "在线服务API根地址。",
+      "api_key": "",
+      "#api_key#-->": "在线API Key；不要提交到GitHub等公开仓库。",
+      "normal_workers": 2,
+      "#normal_workers#-->": "在线Provider常规并发。",
+      "max_workers": 10,
+      "#max_workers#-->": "在线Provider最大并发；最终还要服从服务商限流。",
+      "models": [
+        {
+          "name": "YOUR_ONLINE_MODEL",
+          "#name#-->": "填写在线服务实际模型名；可以添加多个模型实现同一Provider多模型并行。",
+          "enabled": false,
+          "#enabled#-->": "是否启用这个在线模型。",
+          "connect_timeout": 20,
+          "#connect_timeout#-->": "在线模型连接超时秒数。",
+          "read_timeout": 180,
+          "#read_timeout#-->": "在线模型读取超时秒数。",
+          "max_tokens": 6000,
+          "#max_tokens#-->": "在线模型最大输出Token。",
+          "temperature": 0.2,
+          "#temperature#-->": "在线模型随机性。"
+        }
+      ]
+    }
+  },
+  "multi_model": {
+    "enabled": false,
+    "#enabled#-->": "多模型总开关；关闭时按默认模型运行。",
+    "providers": [
+      "local",
+      "online"
+    ],
+    "#providers#-->": "允许参与多模型的Provider名称；每个Provider下面可以有多个models。",
+    "parallel": true,
+    "#parallel#-->": "true=多个模型并行；false=依次调用。",
+    "parallel_workers": 10,
+    "#parallel_workers#-->": "多模型任务池最大并发数；不改变单个Provider自身的并发限制。",
+    "require_min_success": 1,
+    "#require_min_success#-->": "至少成功多少个模型才算该多模型任务成功。",
+    "include_model_labels": true,
+    "#include_model_labels#-->": "是否在汇总输入中保留模型名称标签。",
+    "use_for": [
+      "L1->L2",
+      "L2->L3-AUDIT",
+      "REPORT"
+    ],
+    "#use_for#-->": "哪些流水线阶段使用多模型；可自行增删。"
+  },
+  "search": {
+    "primary_provider": "anysearch",
+    "#primary_provider#-->": "主搜索Provider；默认AnySearch。可改为自定义Provider名称。",
+    "secondary_providers": [
+      "bing"
+    ],
+    "#secondary_providers#-->": "可选的辅助搜索Provider列表；不需要可设为空数组。",
+    "api_workers": 10,
+    "#api_workers#-->": "同时运行的搜索Provider任务数；不是每分钟请求数。",
+    "page_workers": 6,
+    "#page_workers#-->": "网页正文抓取线程数。",
+    "fetch_timeout": 30,
+    "#fetch_timeout#-->": "网页正文抓取超时秒数。",
+    "max_page_chars": 18000,
+    "#max_page_chars#-->": "单网页最多保留字符数。",
+    "fetch_pages": true,
+    "#fetch_pages#-->": "搜索结果后是否继续抓取网页正文。",
+    "user_agent": "Mozilla/5.0",
+    "#user_agent#-->": "网页请求User-Agent。",
+    "providers": {
+      "anysearch": {
+        "enabled": true,
+        "#enabled#-->": "是否启用AnySearch。",
+        "type": "json_api",
+        "#type#-->": "通用JSON搜索API。",
+        "url": "https://api.anysearch.com/v1/search",
+        "#url#-->": "AnySearch接口地址；可替换为其他搜索API。",
+        "method": "POST",
+        "#method#-->": "HTTP请求方法。",
+        "api_key": "",
+        "#api_key#-->": "搜索API Key；公开配置留空。",
+        "auth": {
+          "type": "bearer",
+          "#type#-->": "API Key认证方式。",
+          "header": "Authorization",
+          "#header#-->": "认证请求头名称。"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "#headers#-->": "额外请求头。",
+        "requests_per_minute": 10,
+        "#requests_per_minute#-->": "该搜索Provider每分钟最多发送多少次请求；20/10/100等均可。",
+        "connect_timeout": 20,
+        "#connect_timeout#-->": "API连接超时秒数。",
+        "read_timeout": 60,
+        "#read_timeout#-->": "API读取超时秒数。",
+        "max_results": 10,
+        "#max_results#-->": "单次搜索最多保留结果数。",
+        "request": {
+          "params": {},
+          "#params#-->": "GET等请求的URL参数；支持{query}和{max_results}占位符。",
+          "body": {
+            "query": "{query}",
+            "max_results": "{max_results}",
+            "language": "zh-CN",
+            "zone": "cn",
+            "format": "json"
+          },
+          "#body#-->": "请求JSON；可按自定义搜索API文档修改。"
+        },
+        "response": {
+          "results_path": [
+            "data",
+            "results"
+          ],
+          "#results_path#-->": "结果数组在JSON响应中的路径。",
+          "fields": {
+            "title": [
+              "title"
+            ],
+            "#title#-->": "结果标题字段路径。",
+            "url": [
+              "url"
+            ],
+            "#url#-->": "结果URL字段路径。",
+            "snippet": [
+              "snippet"
+            ],
+            "#snippet#-->": "结果摘要字段路径。",
+            "content": [
+              "content"
+            ]
+          },
+          "#fields#-->": "把自定义API返回字段映射为title/url/snippet/content。",
+          "#content#-->": "正文内容字段路径。"
+        }
+      },
+      "bing": {
+        "enabled": true,
+        "#enabled#-->": "是否启用Bing网页搜索。",
+        "type": "bing_html",
+        "#type#-->": "Bing网页结果解析器。",
+        "url": "https://cn.bing.com/search",
+        "#url#-->": "Bing搜索页面地址。",
+        "count": 10,
+        "#count#-->": "Bing单次期望返回条数。",
+        "requests_per_minute": 10,
+        "#requests_per_minute#-->": "Bing每分钟最多请求数。",
+        "connect_timeout": 20,
+        "#connect_timeout#-->": "Bing连接超时秒数。",
+        "read_timeout": 60,
+        "#read_timeout#-->": "Bing读取超时秒数。"
+      }
+    }
+  },
+  "pipeline": {
+    "queries_per_topic": 6,
+    "#queries_per_topic#-->": "每个研究主题最多执行多少条query模板。",
+    "results_per_query": 8,
+    "#results_per_query#-->": "每条query进入L0的最多结果数。",
+    "max_l1_items_per_run": 80,
+    "#max_l1_items_per_run#-->": "一次L1->L2最多处理多少文件。",
+    "max_l2_items_per_run": 40,
+    "#max_l2_items_per_run#-->": "一次L2->L3最多处理多少文件。",
+    "max_l3_items_per_run": 20,
+    "#max_l3_items_per_run#-->": "一次L3->最终报告最多读取多少文件。",
+    "l1_batch_items": 6,
+    "#l1_batch_items#-->": "L1->L2每批最多文件数。",
+    "l2_batch_items": 4,
+    "#l2_batch_items#-->": "L2->L3每批最多文件数。",
+    "l3_batch_items": 3,
+    "#l3_batch_items#-->": "L3->COMMAND每批最多文件数。",
+    "l1_batch_chars": 32000,
+    "#l1_batch_chars#-->": "L1->L2每批最大输入字符。",
+    "l2_batch_chars": 36000,
+    "#l2_batch_chars#-->": "L2->L3每批最大输入字符。",
+    "l3_batch_chars": 42000,
+    "#l3_batch_chars#-->": "最终报告最大输入字符。",
+    "l0_delete_days": 7,
+    "#l0_delete_days#-->": "L0成功进入L1后至少保留多少天才允许删除。",
+    "promoted_delete_days": 3,
+    "#promoted_delete_days#-->": "上一层成功进入下一层后至少保留多少天才允许删除。",
+    "enable_delete": false,
+    "#enable_delete#-->": "自动删除总开关；稳定前建议false。",
+    "archive_enabled": true,
+    "#archive_enabled#-->": "删除前是否备份到ARCHIVE。",
+    "delete_after_success_only": true,
+    "#delete_after_success_only#-->": "只有下一层成功写入后才能删除上一层。",
+    "sleep_between_search_queries": 0.5,
+    "#sleep_between_search_queries#-->": "同一主题的query之间等待秒数。"
+  },
+  "runtime": {
+    "show_progress": true,
+    "#show_progress#-->": "是否打印详细实时进度。",
+    "resume": true,
+    "#resume#-->": "是否启用断点续接。",
+    "write_log_after_each_step": true,
+    "#write_log_after_each_step#-->": "关键步骤完成/失败后写pipeline.log。",
+    "inject_current_time": true,
+    "#inject_current_time#-->": "是否将当前时间注入模型上下文。",
+    "keep_failed_inputs": true,
+    "#keep_failed_inputs#-->": "模型失败时保留原输入。",
+    "stop_on_llm_error": false,
+    "#stop_on_llm_error#-->": "LLM失败是否停止整个流水线；false更适合长期可中断运行。",
+    "mode_name": "generic_research",
+    "#mode_name#-->": "程序工作模式名称，例如Career职业领域。",
+    "privacy_mode": true,
+    "#privacy_mode#-->": "隐私保护开关。"
+  },
+  "profile": {
+    "path": "profile.txt",
+    "#path#-->": "个人画像文件路径。建议保持profile.txt。",
+    "required": false,
+    "#required#-->": "是否要求必须存在个人画像；通用研究可以不需要profile。",
+    "inject_into_search": false,
+    "#inject_into_search#-->": "是否把与研究相关的profile内容注入搜索query；默认false以防泄露隐私。",
+    "inject_into_reports": true,
+    "#inject_into_reports#-->": "是否在最终报告中提供profile作为上下文。"
+  },
+  "research": {
+    "topics": [
+      "YOUR_RESEARCH_TOPIC_1",
+      "YOUR_RESEARCH_TOPIC_2"
+    ],
+    "#topics#-->": "任意研究主题，不限职业。可以是学校、科研、产品、历史、技术、人物、政策、行业等。",
+    "query_templates": [
+      "{topic} {year}",
+      "{topic} 最新 官方 {year}",
+      "{topic} 历史 数据 趋势",
+      "{topic} 争议 风险 反例",
+      "{topic} 相关政策 研究 报告 {year}"
+    ],
+    "#query_templates#-->": "搜索模板；程序会把{topic}和{year}替换成当前任务内容。",
+    "user_goal": "YOUR_RESEARCH_GOAL",
+    "#user_goal#-->": "研究总目标；会进入最终报告，但不会自动改变搜索主题。",
+    "current_stage": "default",
+    "#current_stage#-->": "当前研究阶段名称；完全由用户定义。",
+    "stage_policy": {
+      "default": "只依据证据研究，不把推测写成事实。"
+    },
+    "#stage_policy#-->": "不同阶段的行为约束；例如学习阶段、项目阶段、决策阶段均可自行定义。",
+    "source_priority": [
+      "official",
+      "government",
+      "university",
+      "research",
+      "reputable_media",
+      "community"
+    ],
+    "#source_priority#-->": "来源可信度排序说明，供模型理解，不改变搜索引擎本身。",
+    "extra_search_instructions": "",
+    "#extra_search_instructions#-->": "额外搜索要求，例如语言、地区、时间范围等。"
+  }
+}
