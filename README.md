@@ -12,7 +12,6 @@
 ## 2. 安装
 
 在项目目录打开终端：
-
 ```bash
 pip install -r requirements.txt
 ```
@@ -27,9 +26,7 @@ requirements.txt          Python依赖
 Start.bat                 Windows启动菜单
 RESULT/                   所有研究结果（初始化后即可自动生成）
 ```
-
 主要结果目录：
-
 ```text
 RESULT/
 ├─ L0_RAW/          原始搜索资料
@@ -49,7 +46,6 @@ RESULT/
 如果需要使用个人资料，将内容填写到 `profile.txt`。
 
 然后初始化：
-
 ```bash
 python "Information-Gatherer.py" --init
 ```
@@ -103,13 +99,11 @@ python "Information-Gatherer.py" --monthly
 ```bash
 python "Information-Gatherer.py" --cleanup
 ```
-
 也可以直接运行 `Start.bat`，通过菜单操作。
 
 ## 6. 信息处理流程
 
 程序按照以下流程处理资料：
-
 ```text
 搜索
  ↓
@@ -123,7 +117,6 @@ L3_KNOWLEDGE
  ↓
 COMMAND
 ```
-
 - `L0_RAW`：原始搜索资料
 - `L1_INTEL`：AI提取信息
 - `L2_FACT`：事实核验
@@ -135,7 +128,6 @@ COMMAND
 程序不要求持续运行，可以随时关闭。
 
 已经成功保存的结果不会因为程序关闭而全部重新开始。日志位于：
-
 ```text
 RESULT/logs/
 ```
@@ -145,7 +137,6 @@ RESULT/logs/
 如果本地模型处理速度较慢，可以在 `set.json` 中增加 LLM 读取超时时间；如果仍然超时，可以降低单批次处理的数据量。
 
 失败任务会记录到：
-
 ```text
 RESULT/logs/errors.log
 ```
@@ -167,5 +158,4 @@ python Information-Gatherer.py --run
 ```bash
 python "Information Gatherer.py" --run
 ```
-
 `Start.bat` 也需要使用对应的新文件名。
