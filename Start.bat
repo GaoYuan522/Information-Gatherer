@@ -1,16 +1,16 @@
-title Æô¶¯ÖÐ......
+title å¯åŠ¨ä¸­......
 @echo off
 cls
 
-:: ¼ì²é¹ÜÀíÔ±È¨ÏÞ
-echo ÕýÔÚ¼ì²é¹ÜÀíÔ±È¨ÏÞ......
+:: æ£€æŸ¥ç®¡ç†å‘˜æƒé™
+echo æ­£åœ¨æ£€æŸ¥ç®¡ç†å‘˜æƒé™......
 NET SESSION >nul 2>&1
 if %errorLevel% == 0 (
-    :: ÒÑ¾­ÊÇ¹ÜÀíÔ±£¬¼ÌÐøÖ´ÐÐ½Å±¾
+    :: å·²ç»æ˜¯ç®¡ç†å‘˜ï¼Œç»§ç»­æ‰§è¡Œè„šæœ¬
     goto :ELEVATED
 ) else (
-    :: ÇëÇóÌáÉýÎª¹ÜÀíÔ±È¨ÏÞ
-    echo ÕýÔÚÌáÉý¹ÜÀíÔ±È¨ÏÞ......
+    :: è¯·æ±‚æå‡ä¸ºç®¡ç†å‘˜æƒé™
+    echo æ­£åœ¨æå‡ç®¡ç†å‘˜æƒé™......
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
     echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
     "%temp%\getadmin.vbs"
@@ -19,34 +19,34 @@ if %errorLevel% == 0 (
 )
 
 :ELEVATED
-:: ÒÔÏÂÊÇÒÑ¾­ÒÔ¹ÜÀíÔ±È¨ÏÞÔËÐÐµÄ´úÂë
-echo ÒÑÈ·ÈÏÎª¹ÜÀíÔ±È¨ÏÞ¡£
+:: ä»¥ä¸‹æ˜¯å·²ç»ä»¥ç®¡ç†å‘˜æƒé™è¿è¡Œçš„ä»£ç 
+echo å·²ç¡®è®¤ä¸ºç®¡ç†å‘˜æƒé™ã€‚
 cls
 
-:: ÑÓ³Ù»·¾³±äÁ¿
-echo ÕýÔÚÉèÖÃÑÓ³Ù»·¾³±äÁ¿......
+:: å»¶è¿ŸçŽ¯å¢ƒå˜é‡
+echo æ­£åœ¨è®¾ç½®å»¶è¿ŸçŽ¯å¢ƒå˜é‡......
 setlocal enabledelayedexpansion
 cls
 
-:: ÇÐ»»µ½µ±Ç°BATÎÄ¼þËùÔÚµÄÕæÊµ¸ùÄ¿Â¼£¬²»ÊÜÆô¶¯Î»ÖÃÓ°Ïì
-echo ÕýÔÚ¶¨Î»¸ùÄ¿Â¼......
+:: åˆ‡æ¢åˆ°å½“å‰BATæ–‡ä»¶æ‰€åœ¨çš„çœŸå®žæ ¹ç›®å½•ï¼Œä¸å—å¯åŠ¨ä½ç½®å½±å“
+echo æ­£åœ¨å®šä½æ ¹ç›®å½•......
 cd /d "%~dp0"
 
 goto :MENU
 
 :MENU
-title Ö÷²Ëµ¥
+title ä¸»èœå•
 :: color F0
 cls
-echo 1. Ö±½Ó¿ªÊ¼
-echo 2. ×Ô¶¨Òå¿ªÊ¼
-echo 3. Ê¹ÓÃËµÃ÷
-echo 4. ²é¿´×÷Õß
-echo 5. Ê×´Î/¸üÐÂ³õÊ¼»¯
-echo 0. ÍË³ö³ÌÐò
-echo *ÊäÈëÑ¡ÏîÇ°ÃæµÄÊý×Ö¼´¿É£¨²»´øµã£©¡£
+echo 1. ç›´æŽ¥å¼€å§‹
+echo 2. è‡ªå®šä¹‰å¼€å§‹
+echo 3. ä½¿ç”¨è¯´æ˜Ž
+echo 4. æŸ¥çœ‹ä½œè€…
+echo 5. é¦–æ¬¡/æ›´æ–°åˆå§‹åŒ–
+echo 0. é€€å‡ºç¨‹åº
+echo *è¾“å…¥é€‰é¡¹å‰é¢çš„æ•°å­—å³å¯ï¼ˆä¸å¸¦ç‚¹ï¼‰ã€‚
 
-set /p choice=ÇëÊäÈëÑ¡Ïî£º
+set /p choice=è¯·è¾“å…¥é€‰é¡¹ï¼š
 
 if !choice! == 1 (goto :DEFAULT
 ) else if !choice! == 2 (goto :CUSTOM
@@ -57,7 +57,7 @@ if !choice! == 1 (goto :DEFAULT
 ) else (goto :ERROR)
 
 :DEFAULT
-title ±ê×¼Ä£Ê½
+title æ ‡å‡†æ¨¡å¼
 python Information-Gatherer.py --run
 
 shutdown -s -t 60
@@ -65,8 +65,8 @@ pause
 goto :MENU
 
 :CUSTOM
-title ×Ô¶¨ÒåÄ£Ê½
-set /p mode=ÇëÊäÈëÄ£Ê½Ãû³Æ£¨²»´øÀ¨ºÅ¼°¡°--¡±£©£º
+title è‡ªå®šä¹‰æ¨¡å¼
+set /p mode=è¯·è¾“å…¥æ¨¡å¼åç§°ï¼ˆä¸å¸¦æ‹¬å·åŠâ€œ--â€ï¼‰ï¼š
 python Information-Gatherer.py --!mode!
 
 shutdown -s -t 60
@@ -74,38 +74,36 @@ pause
 goto :MENU
 
 :GUIDE
-title Ê¹ÓÃËµÃ÷
-echo ³ÌÐòÔ­ÉúÊ¹ÓÃËµÃ÷ÈçÏÂ£º
+title ä½¿ç”¨è¯´æ˜Ž
+echo ç¨‹åºåŽŸç”Ÿä½¿ç”¨è¯´æ˜Žå¦‚ä¸‹ï¼š
 python Information-Gatherer.py --help
 pause
 goto :MENU
 
 :AUTHOR
-title ×÷ÕßÐÅÏ¢
-echo ×÷Õß£º¸ßÔ¶
-echo GitHub£ºGaoYuan522
-echo ÊÖ»ú£º138 1055 5080
-echo ÓÊÏä£ºGaoYuan13810088206@163.com
-echo ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª±¾ÐÅÏ¢¸üÐÂÓÚ2026Äê8ÔÂ12ÈÕ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+title ä½œè€…ä¿¡æ¯
+echo GitHubï¼šGaoYuan522
+echo Emailï¼šGaoYuan13810088206@163.com
+echo Versionï¼š4.0.0
 pause
 cls
 goto :MENU
 
 :INITIALIZE
-title ³õÊ¼»¯
+title åˆå§‹åŒ–
 python Information-Gatherer.py --init
 pause
 goto :MENU
 
 :EXIT
-title ¼´½«ÍË³ö³ÌÐò
-echo ¸ÐÐ»Ê¹ÓÃ±¾³ÌÐò¡£
+title å³å°†é€€å‡ºç¨‹åº
+echo æ„Ÿè°¢ä½¿ç”¨æœ¬ç¨‹åºã€‚
 pause
 exit
 
 :ERROR
-title ´íÎó
-echo ÎÞÐ§Ñ¡Ïî£¬ÇëÖØÐÂÊäÈë¡£
+title é”™è¯¯
+echo æ— æ•ˆé€‰é¡¹ï¼Œè¯·é‡æ–°è¾“å…¥ã€‚
 pause
 cls
 goto :MENU
